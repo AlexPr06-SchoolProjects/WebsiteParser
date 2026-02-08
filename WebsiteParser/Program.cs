@@ -1,12 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebsiteParser.Classes;
+using WebsiteParser.Classes.WebParser;
 
 HostApplicationBuilder builder = new HostApplicationBuilder();
 
 builder.Services.AddSingleton<App>();
 
 // ------------------------ Other Services --------------------------------------
+
+builder.Services.AddSingleton<WebParserClass>();
 
 // ------------------------ Other Services --------------------------------------
 
