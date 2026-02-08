@@ -11,7 +11,7 @@ internal class WebParserManager(
         FileManagerClass fileManagerClass
     )
 {
-    private async Task<IDictionary<string, IWebsiteParseResult>> GetWebsitesHTMLAsync(string jsonFileWithPaths, string directoryPathToSaveHTML, CancellationToken token)
+    private async Task<IDictionary<string, IWebsiteParseResult>?> GetWebsitesHTMLAsync(string jsonFileWithPaths, string directoryPathToSaveHTML, CancellationToken token)
     {
         List<string> paths = new List<string>();
         FileGettingResult fileGettingResult = await fileManagerClass.GetJsonPathsAsync(jsonFileWithPaths);
@@ -31,6 +31,8 @@ internal class WebParserManager(
             //    _ => "Неизвестный статус"
             //};
             ///----------------------- To Change
+
+            return null;
         }
 
         JsonFileGettingSuccess succeededResult = (JsonFileGettingSuccess)fileGettingResult;
@@ -41,9 +43,11 @@ internal class WebParserManager(
         return await webParserClass.FetchMultipleDataAsync(paths, token);
     }
 
-    public async Task ParseWebsites(string jsonFileWithPaths, string directoryPathToSaveHTML, CancellationToken token)
+    public async Task<IWebParserManagerResult> ParseWebsites(string jsonFileWithPaths, string directoryPathToSaveHTML, CancellationToken token)
     {
-        IDictionary<string, IWebsiteParseResult> parsedSites = await this.GetWebsitesHTMLAsync(jsonFileWithPaths, directoryPathToSaveHTML, token);
+        IDictionary<string, IWebsiteParseResult>? parsedSites = await this.GetWebsitesHTMLAsync(jsonFileWithPaths, directoryPathToSaveHTML, token);
+        if (parsedSites is null)
+            return new WebParserManagerFailure($"Файл с путями сайтов не был найден.");
         // LOGGIN logic
 
         // LOGGIN logic
@@ -51,9 +55,11 @@ internal class WebParserManager(
         Dictionary<string, string> filesToHTML = new Dictionary<string, string>(parsedSites.Count);
         foreach (var (key, value) in parsedSites)
             filesToHTML.Add(key, value.Data);
-        List<IFileWrittenResult> fileWrittenResults = await fileManagerClass.WriteMultipleFilesAsync(filesToHTML, DirectoryPaths.SAVE_RESULT_FOLDER_PATH, FileExtentions.HTML);
+        List<IFileWrittenResult> fileWrittenResults = await fileManagerClass.WriteMultipleFilesAsync(filesToHTML, directoryPathToSaveHTML, FileExtentions.HTML);
         // LOGGIN logic
 
         // LOGGIN logic   
+
+        return new WebParserManagerSuccess($"Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.");
     }
 }

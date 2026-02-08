@@ -14,13 +14,11 @@ builder.Services.AddSingleton<App>();
 
 // ------------------------ Other Services --------------------------------------
 
-builder.Services.AddSingleton<WebParserClass>();
-builder.Services.AddSingleton<WebParserManager>();
-
 builder.Services.AddSingleton<FileManagerClass>();
 
 // WebParser services
-
+builder.Services.AddSingleton<WebParserClass>();
+builder.Services.AddSingleton<WebParserManager>();
 builder.Services.AddTransient(typeof(IJsonParser<>), typeof(JsonParser<>));
 builder.Services.AddTransient(typeof(JsonParseManager<>));
 builder.Services.AddHttpClient("WebsiteParserClient", client =>
