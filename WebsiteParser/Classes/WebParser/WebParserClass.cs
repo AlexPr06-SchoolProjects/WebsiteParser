@@ -4,26 +4,26 @@ namespace WebsiteParser.Classes.WebParser;
 
 internal class WebParserClass
 {
-    public async Task<ParseResult> FetchDataAsync(string url, CancellationToken token)
+    public async Task<WebsiteParseResult> FetchDataAsync(string url, CancellationToken token)
     {
         using HttpClient client = new HttpClient();
-        ParseResult result;
+        WebsiteParseResult result;
         try
         {
             string response = await client.GetStringAsync(url, token);
-            result = new Success(response);
+            result = new WebsiteParseSuccess(response);
         }
         catch(Exception ex)
         {
-            result = new Error("404", $"ERROR: {ex.Message}");
+            result = new WebsiteParseError("404", $"ERROR: {ex.Message}");
         }
 
         return result;
     }
 
-    public async Task<IDictionary<string, ParseResult>> FetchMultipleDataAsync(IEnumerable<string> urls, CancellationToken token)
+    public async Task<IDictionary<string, WebsiteParseResult>> FetchMultipleDataAsync(IEnumerable<string> urls, CancellationToken token)
     {
-        var tasks = new Dictionary<string, Task<ParseResult>>();
+        var tasks = new Dictionary<string, Task<WebsiteParseResult>>();
 
         foreach (string url in urls)
             tasks.Add(url, FetchDataAsync(url, token));
