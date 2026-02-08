@@ -1,14 +1,11 @@
 ﻿{
 	"Sites": [
-		{
-			"name": "Google Main",
-			"url": "https://google.com",
-			"isActive": true
-		},
-		{
-			"name": "Habr Articles",
-			"url": "https://habr.com/ru/articles/",
-			"isActive": true
-		}
+		"https://google.com",
+		"https://habr.com",
+		"https://proweb.ua",
+		"https://www.microsoft.com",
+		"https://github.com",
+		"https://www.wikipedia.org",
+		"https://stackoverflow.com"
 	]
 }

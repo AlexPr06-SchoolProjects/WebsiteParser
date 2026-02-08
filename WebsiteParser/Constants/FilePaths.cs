@@ -2,10 +2,10 @@
 
 internal static class FilePaths
 {
-    public const string WEBSITES_PATHS = "../../../Data/webiste-paths.json";
+    public const string WEBSITES_PATHS = "../../../Data/website-paths.json";
 }
 
 internal static class DirectoryPaths
 {
-    public const string SAVE_RESULT_FOLDER_PATH = "../../../data/SavedResultsOfParsedWebsites/";
+    public const string SAVE_RESULT_FOLDER_PATH = "../../../SavedResultsOfParsedWebsites/";
 }

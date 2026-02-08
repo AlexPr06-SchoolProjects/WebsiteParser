@@ -1,7 +1,9 @@
-﻿namespace WebsiteParser.Records;
+﻿using WebsiteParser.Interfaces;
 
-internal abstract record FileGettingResult;
+namespace WebsiteParser.Records;
 
-internal record FileGettingSuccess(string Data, string Message = "OK") : FileGettingResult;
-internal record FileGettingError(string FilePath, string Message) : FileGettingResult;
-internal record FileGettingWarning(string FilePath, string Message) : FileGettingResult;
+internal abstract record FileGettingResult(string Message) : IFileOperationResult;
+
+internal record JsonFileGettingSuccess(List<string> paths, string Message = "OK") : FileGettingResult(Message);
+internal record JsonFileGettingError(string FilePath, string Message) : FileGettingResult(Message);
+internal record JsonFileGettingWarning(string FilePath, string Message) : FileGettingResult(Message);

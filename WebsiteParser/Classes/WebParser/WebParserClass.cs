@@ -1,29 +1,41 @@
-﻿using WebsiteParser.Records;
+﻿using WebsiteParser.Interfaces;
+using WebsiteParser.Records;
 
 namespace WebsiteParser.Classes.WebParser;
 
-internal class WebParserClass
+internal class WebParserClass(IHttpClientFactory httpClientFactory)
 {
-    public async Task<WebsiteParseResult> FetchDataAsync(string url, CancellationToken token)
+    public async Task<IWebsiteParseResult> FetchDataAsync(string url, CancellationToken token)
     {
-        using HttpClient client = new HttpClient();
-        WebsiteParseResult result;
-        try
+        using HttpClient client = httpClientFactory.CreateClient("WebsiteParserClient");
+        int maxRetries = 3;
+        for (int i = 1; i <= maxRetries; ++i)
         {
-            string response = await client.GetStringAsync(url, token);
-            result = new WebsiteParseSuccess(response);
-        }
-        catch(Exception ex)
-        {
-            result = new WebsiteParseError("404", $"ERROR: {ex.Message}");
+            try
+            {
+                string html = await client.GetStringAsync(url, token);
+                return new WebsiteParseSuccess(html);
+            }
+            catch (HttpRequestException ex)
+            {
+                return new WebsiteParseError($"HTTP Error: {ex.StatusCode}", ex.Message);
+            }
+            catch when (i < maxRetries)
+            {
+                await Task.Delay(1000 * (i + 1), token);
+            }
+            catch (Exception ex) 
+            {
+                return new WebsiteParseError($"ERROR: {ex.Message}", $"ERROR: {ex.Message}");
+            }
         }
 
-        return result;
+        return new WebsiteParseError("Unknown", "Failed after retries");
     }
 
-    public async Task<IDictionary<string, WebsiteParseResult>> FetchMultipleDataAsync(IEnumerable<string> urls, CancellationToken token)
+    public async Task<IDictionary<string, IWebsiteParseResult>> FetchMultipleDataAsync(IEnumerable<string> urls, CancellationToken token)
     {
-        var tasks = new Dictionary<string, Task<WebsiteParseResult>>();
+        var tasks = new Dictionary<string, Task<IWebsiteParseResult>>();
 
         foreach (string url in urls)
             tasks.Add(url, FetchDataAsync(url, token));

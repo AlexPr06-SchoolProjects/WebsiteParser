@@ -1,7 +1,7 @@
-﻿namespace WebsiteParser.Records;
+﻿using WebsiteParser.Interfaces;
 
-internal abstract record WebsiteParseResult;
+namespace WebsiteParser.Records;
 
-internal record WebsiteParseSuccess(string Data, string Message = "OK") : WebsiteParseResult;
-internal record WebsiteParseError(string ErrorCode, string Message) : WebsiteParseResult;
-internal record WebsiteParseWarning(int Code, string Message) : WebsiteParseResult;
+internal record WebsiteParseSuccess(string Data, string Message = "OK") : IWebsiteParseResult;
+internal record WebsiteParseError(string Data, string Message) : IWebsiteParseResult;
+internal record WebsiteParseWarning(string Data, string Message) : IWebsiteParseResult;

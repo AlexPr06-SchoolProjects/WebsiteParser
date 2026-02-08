@@ -1,9 +1,14 @@
-﻿namespace WebsiteParser.Classes;
+﻿using WebsiteParser.Constants;
+using WebsiteParser.Classes.WebParser;
 
-internal class App
+namespace WebsiteParser.Classes;
+
+internal class App(WebParserManager webParserManager)
 {
-    public void Run()
+    async public Task Run()
     {
-        Console.WriteLine("Hello World!");
+        CancellationTokenSource cts = new CancellationTokenSource();
+
+        await webParserManager.ParseWebsites(FilePaths.WEBSITES_PATHS, DirectoryPaths.SAVE_RESULT_FOLDER_PATH, cts.Token);
     }
 }

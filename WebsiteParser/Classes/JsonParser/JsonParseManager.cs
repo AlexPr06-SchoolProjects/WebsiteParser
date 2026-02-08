@@ -6,20 +6,20 @@ namespace WebsiteParser.Classes.JsonParser;
 internal class JsonParseManager<TConfig>(IJsonParser<TConfig> jsonParser)
     where TConfig : class, IConfig
 {
-    public async Task<JsonParseResult<TConfig>> JsonParseResult (string filePath)
+    public async Task<JsonParseResult<TConfig>> JsonParseResultAsync (string filePath)
     {
         try
         {
             TConfig? parsedJson = await jsonParser.ParseFileAsync(filePath);
             if (parsedJson is null)
             {
-                return new JsonParseError<TConfig>($"File {filePath} was empty or not found.");
+                return new JsonParseError<TConfig>($"Файл {filePath} пуст или не найден.");
             }
-            return new JsonParseSuccess<TConfig>(parsedJson, "Data parsed successfully");
+            return new JsonParseSuccess<TConfig>(parsedJson, "Данные были успешно парсированы");
         }
         catch (Exception ex)
         {
-            return new JsonParseWarning<TConfig>($"Parsing failed: {ex.Message}");
+            return new JsonParseError<TConfig>($"Провал парсинга: {ex.Message}");
         }
     }
 }

@@ -1,23 +1,43 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using WebsiteParser.Classes;
+using WebsiteParser.Classes.FileManager;
 using WebsiteParser.Classes.JsonParser;
 using WebsiteParser.Classes.WebParser;
 using WebsiteParser.Interfaces;
-using WebsiteParser.Records;
+using Spectre.Console;
 
-HostApplicationBuilder builder = new HostApplicationBuilder();
+HostApplicationBuilder builder = new HostApplicationBuilder(args);
 
 builder.Services.AddSingleton<App>();
 
 // ------------------------ Other Services --------------------------------------
 
 builder.Services.AddSingleton<WebParserClass>();
+builder.Services.AddSingleton<WebParserManager>();
+
+builder.Services.AddSingleton<FileManagerClass>();
 
 // WebParser services
 
 builder.Services.AddTransient(typeof(IJsonParser<>), typeof(JsonParser<>));
 builder.Services.AddTransient(typeof(JsonParseManager<>));
+builder.Services.AddHttpClient("WebsiteParserClient", client =>
+{
+    client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36");
+    client.DefaultRequestHeaders.Add("Accept", "text/html");
+    client.Timeout = TimeSpan.FromSeconds(10); 
+});
+
+
+// ----------------------- OTPIONAL ------------------------------------
+
+bool useHttpLogging = AnsiConsole.Confirm("Желаете использовать логирование, предоставленное встроенным логгером от IHttpClientFactory?");
+if (!useHttpLogging)
+    builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
+
+// ----------------------- OTPIONAL ------------------------------------
 
 // ------------------------ Other Services --------------------------------------
 
@@ -25,4 +45,4 @@ using IHost host  = builder.Build();
 
 App app = host.Services.GetRequiredService<App>(); 
 
-app.Run();  
+await app.Run();  
