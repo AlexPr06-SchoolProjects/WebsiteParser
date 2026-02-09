@@ -1,9 +1,13 @@
-﻿using WebsiteParser.Interfaces;
+﻿using WebsiteParser.Classes.AsyncLogger;
+using WebsiteParser.Interfaces;
 using WebsiteParser.Records;
 
 namespace WebsiteParser.Classes.WebParser;
 
-internal class WebParserClass(IHttpClientFactory httpClientFactory)
+internal class WebParserClass(
+    IHttpClientFactory httpClientFactory, 
+    AsyncLoggerClass asyncLogger
+    )
 {
     public async Task<IWebsiteParseResult> FetchDataAsync(string url, CancellationToken token)
     {
@@ -18,7 +22,10 @@ internal class WebParserClass(IHttpClientFactory httpClientFactory)
             }
             catch (HttpRequestException ex)
             {
-                return new WebsiteParseError($"HTTP Error: {ex.StatusCode}", ex.Message);
+                // LOGGIN logic
+                await asyncLogger.LogAsync($"HTTP Error: {ex.Message}");
+                // LOGGIN logic
+                return new WebsiteParseError($"HTTP Error: {ex.Message}", ex.Message);
             }
             catch when (i < maxRetries)
             {
@@ -26,10 +33,16 @@ internal class WebParserClass(IHttpClientFactory httpClientFactory)
             }
             catch (Exception ex) 
             {
+                // LOGGIN logic
+                await asyncLogger.LogAsync($"ERROR: {ex.Message}");
+                // LOGGIN logic
                 return new WebsiteParseError($"ERROR: {ex.Message}", $"ERROR: {ex.Message}");
             }
         }
 
+        // LOGGIN logic
+        await asyncLogger.LogAsync("Failed after retries");
+        // LOGGIN logic
         return new WebsiteParseError("Unknown", "Failed after retries");
     }
 

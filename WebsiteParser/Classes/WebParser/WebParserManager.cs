@@ -1,14 +1,15 @@
 ﻿using WebsiteParser.Classes.FileManager;
 using WebsiteParser.Interfaces;
 using WebsiteParser.Records;
-using WebsiteParser.Constants;
 using WebsiteParser.Enums;
+using WebsiteParser.Classes.AsyncLogger;
 
 namespace WebsiteParser.Classes.WebParser;
 
 internal class WebParserManager(
         WebParserClass webParserClass,
-        FileManagerClass fileManagerClass
+        FileManagerClass fileManagerClass,
+        AsyncLoggerClass asyncLogger
     )
 {
     private async Task<IDictionary<string, IWebsiteParseResult>?> GetWebsitesHTMLAsync(string jsonFileWithPaths, string directoryPathToSaveHTML, CancellationToken token)
@@ -19,19 +20,16 @@ internal class WebParserManager(
 
         if (fileGettingResult is not JsonFileGettingSuccess)
         {
-
-            // TODO : IMPLEMENT logging 
-
-            //----------------------- To Change
-            //string message = fileGettingResult switch
-            //{
-            //    JsonFileGettingError e => $"{e.FilePath}: {e.Message}",
-            //    JsonFileGettingWarning w => $"{w.FilePath}: {w.Message}",
-            //    JsonFileGettingSuccess s => $"Успех: {s.Message}",
-            //    _ => "Неизвестный статус"
-            //};
-            ///----------------------- To Change
-
+            // LOGGIN logic
+            string message = fileGettingResult switch
+            {
+                JsonFileGettingError e => $"{e.FilePath}: {e.Message}",
+                JsonFileGettingWarning w => $"{w.FilePath}: {w.Message}",
+                JsonFileGettingSuccess s => $"Успех: {s.Message}",
+                _ => "Неизвестный статус"
+            };
+            await asyncLogger.LogAsync(message);
+            // LOGGIN logic
             return null;
         }
 
@@ -47,19 +45,20 @@ internal class WebParserManager(
     {
         IDictionary<string, IWebsiteParseResult>? parsedSites = await this.GetWebsitesHTMLAsync(jsonFileWithPaths, directoryPathToSaveHTML, token);
         if (parsedSites is null)
+        {
+            // LOGGIN logic
+            await asyncLogger.LogAsync($"Файл с путями сайтов не был найден.");
+            // LOGGIN logic
             return new WebParserManagerFailure($"Файл с путями сайтов не был найден.");
-        // LOGGIN logic
-
-        // LOGGIN logic
+        }
 
         Dictionary<string, string> filesToHTML = new Dictionary<string, string>(parsedSites.Count);
         foreach (var (key, value) in parsedSites)
             filesToHTML.Add(key, value.Data);
         List<IFileWrittenResult> fileWrittenResults = await fileManagerClass.WriteMultipleFilesAsync(filesToHTML, directoryPathToSaveHTML, FileExtentions.HTML);
         // LOGGIN logic
-
+        await asyncLogger.LogAsync($"Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.");
         // LOGGIN logic   
-
         return new WebParserManagerSuccess($"Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.");
     }
 }

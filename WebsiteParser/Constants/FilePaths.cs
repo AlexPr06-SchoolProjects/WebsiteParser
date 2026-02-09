@@ -8,4 +8,12 @@ internal static class FilePaths
 internal static class DirectoryPaths
 {
     public const string SAVE_RESULT_FOLDER_PATH = "../../../SavedResultsOfParsedWebsites/";
+
+    public static void CreateDirectoryIfNotExist(string dirPath)
+    {
+        string absolutePath = Path.GetFullPath(dirPath);
+
+        if (!Directory.Exists(absolutePath))
+            Directory.CreateDirectory(absolutePath);
+    }
 }

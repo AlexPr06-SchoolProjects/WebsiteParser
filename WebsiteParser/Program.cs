@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Spectre.Console;
 using WebsiteParser.Classes;
+using WebsiteParser.Classes.AsyncLogger;
 using WebsiteParser.Classes.FileManager;
 using WebsiteParser.Classes.JsonParser;
 using WebsiteParser.Classes.WebParser;
 using WebsiteParser.Interfaces;
-using Spectre.Console;
 
 HostApplicationBuilder builder = new HostApplicationBuilder(args);
 
@@ -27,6 +28,9 @@ builder.Services.AddHttpClient("WebsiteParserClient", client =>
     client.DefaultRequestHeaders.Add("Accept", "text/html");
     client.Timeout = TimeSpan.FromSeconds(10); 
 });
+
+// Async logger services
+builder.Services.AddSingleton<AsyncLoggerClass>();
 
 
 // ----------------------- OTPIONAL ------------------------------------
