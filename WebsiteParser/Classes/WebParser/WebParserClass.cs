@@ -18,6 +18,9 @@ internal class WebParserClass(
             try
             {
                 string html = await client.GetStringAsync(url, token);
+                // LOGGIN logic
+                await asyncLogger.LogAsync($"[green]Вебсайт: [seagreen1]{url}[/]      успешно пропарсирован.[/]");
+                // LOGGIN logic
                 return new WebsiteParseSuccess(html);
             }
             catch (HttpRequestException ex)

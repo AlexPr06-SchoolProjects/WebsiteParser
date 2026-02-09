@@ -47,7 +47,7 @@ internal class WebParserManager(
         if (!await NetworkHelperClass.HasConnection())
         {
             await asyncLogger.LogAsync("[red]Ошибка: Интернет-соединение отсутствует. Проверьте кабель или Wi-Fi.[/]");
-            return new WebParserManagerFailure("Ошибка: Интернет-соединение отсутствует. Проверьте кабель или Wi-Fi.");
+            return new WebParserManagerFailure("[red]Ошибка: Интернет-соединение отсутствует. Проверьте кабель или Wi-Fi.[/]");
         }
 
         IDictionary<string, IWebsiteParseResult>? parsedSites = await this.GetWebsitesHTMLAsync(jsonFileWithPaths, directoryPathToSaveHTML, token);
@@ -56,16 +56,21 @@ internal class WebParserManager(
             // LOGGIN logic
             await asyncLogger.LogAsync($"[red]Файл с путями сайтов не был найден.[/]");
             // LOGGIN logic
-            return new WebParserManagerFailure($"Файл с путями сайтов не был найден.");
+            return new WebParserManagerFailure($"[red]Файл с путями сайтов не был найден.[/]");
         }
+
+        // LOGGIN logic
+        await asyncLogger.LogAsync($"[springgreen3]Файлы были пропарсированны.[/]");
+        // LOGGIN logic
 
         Dictionary<string, string> filesToHTML = new Dictionary<string, string>(parsedSites.Count);
         foreach (var (key, value) in parsedSites)
             filesToHTML.Add(key, value.Data);
         List<IFileWrittenResult> fileWrittenResults = await fileManagerClass.WriteMultipleFilesAsync(filesToHTML, directoryPathToSaveHTML, FileExtentions.HTML);
         // LOGGIN logic
-        await asyncLogger.LogAsync($"[green]Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.[/]");
+        await asyncLogger.LogAsync($"[springgreen3]Запись сайтов закончена.[/]");
         // LOGGIN logic   
-        return new WebParserManagerSuccess($"[springgreen3]Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.[/]");
+        return new WebParserManagerSuccess($"[springgreen3]Все сайты из файла [seagreen1]{Path.GetFullPath(jsonFileWithPaths)}[/] " +
+            $"были пропарсированны и положены в директорию [seagreen1]{Path.GetFullPath(directoryPathToSaveHTML)}[/].[/]");
     }
 }

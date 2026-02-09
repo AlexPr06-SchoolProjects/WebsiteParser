@@ -21,7 +21,7 @@ internal class FileManagerClass(
             // LOGGIN logic
             await asyncLogger.LogAsync($"[red]ERROR: Директории не существует.[/]");
             // LOGGIN logic
-            return new JsonFileGettingError(fullFilePath, $"ERROR: Директории не существует.");
+            return new JsonFileGettingError(fullFilePath, $"[red]ERROR: Директории не существует.[/]");
         }
 
         JsonParseResult<Config> jsonResult = await jsonParseManager.JsonParseResultAsync(fullFilePath);
@@ -60,7 +60,7 @@ internal class FileManagerClass(
                 // LOGGIN logic
                 await asyncLogger.LogAsync($"[red]Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}.[/]");
                 // LOGGIN logic
-                result = new JsonFileGettingError("", $"Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}.");
+                result = new JsonFileGettingError("", $"[red]Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}.[/]");
                 break;
         }
 
@@ -82,12 +82,12 @@ internal class FileManagerClass(
                 using FileStream fs = File.Create(fullPathToWrite);
                 using StreamWriter sw = new StreamWriter(fs);
                 await sw.WriteAsync(kvp.Value);
-                results.Add(new FileWrittenSuccess($"{cleanFileName} был успешно записан."));
-                await asyncLogger.LogAsync($"[green]{cleanFileName} был успешно записан.[/]");
+                results.Add(new FileWrittenSuccess($"[seagreen1]{cleanFileName}[/] [green]был успешно записан.[/]"));
+                await asyncLogger.LogAsync($"[seagreen1]{cleanFileName}[/] [green]был успешно записан.[/]");
             }
             catch (Exception ex)
             {
-                results.Add(new FileWrittenFailure($"Ошибка записи в файл: {ex.Message}."));
+                results.Add(new FileWrittenFailure($"[red]Ошибка записи в файл: {ex.Message}.[/]"));
                 await asyncLogger.LogAsync($"[red]Ошибка записи в файл: {ex.Message}.[/]");
             }
         }

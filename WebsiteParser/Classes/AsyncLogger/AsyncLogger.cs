@@ -39,8 +39,8 @@ internal class AsyncLoggerClass
         }
         catch(OperationCanceledException)
         {
-            AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: [springgreen3]Все логи были сохраненны в папку " +
-                $" {DirectoryPaths.LOGS_APP_FOLDER_PATH} в файл {FileNames.MAIN_LOG_FILE_NAME}.[/]"));
+            AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: [springgreen3]Все логи были сохраненны в файл [/]" +
+                $"[seagreen1]{_logsFilePath}.[/]"));
             AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {Markup.Escape($"Завершение работы...")}"));
         }
     }
