@@ -19,19 +19,19 @@ internal class FileManagerClass(
         if (!File.Exists(fullFilePath))
         {
             // LOGGIN logic
-            await asyncLogger.LogAsync($"ERROR: Директории не существует");
+            await asyncLogger.LogAsync($"[red]ERROR: Директории не существует.[/]");
             // LOGGIN logic
-            return new JsonFileGettingError(fullFilePath, $"ERROR: Директории не существует");
+            return new JsonFileGettingError(fullFilePath, $"ERROR: Директории не существует.");
         }
 
         JsonParseResult<Config> jsonResult = await jsonParseManager.JsonParseResultAsync(fullFilePath);
 
         string summary = jsonResult switch
         {
-            JsonParseSuccess<Config> success => $"Готово! Сайтов в списке: {success.Data.Sites.Count}",
-            JsonParseError<Config> error => $"Провал: {error.Message}",
-            JsonParseWarning<Config> warning => $"Внимание: {warning.Message}. Но данные есть.",
-            _ => "Неизвестный статус"
+            JsonParseSuccess<Config> success => $"[green]Готово! Сайтов в списке: {success.Data.Sites.Count}.[/]",
+            JsonParseError<Config> error => $"[red]Провал: {error.Message}.[/]",
+            JsonParseWarning<Config> warning => $"[orange1]Внимание: {warning.Message}. Но данные есть.[/]",
+            _ => "[grey]Неизвестный статус.[/]"
         };
 
         // LOGGIN logic
@@ -58,9 +58,9 @@ internal class FileManagerClass(
                 break;
             default:
                 // LOGGIN logic
-                await asyncLogger.LogAsync($"Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}");
+                await asyncLogger.LogAsync($"[red]Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}.[/]");
                 // LOGGIN logic
-                result = new JsonFileGettingError("", $"Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}");
+                result = new JsonFileGettingError("", $"Неожиданный тип результата парсинга файла: {jsonResult.GetType().Name}.");
                 break;
         }
 
@@ -83,12 +83,12 @@ internal class FileManagerClass(
                 using StreamWriter sw = new StreamWriter(fs);
                 await sw.WriteAsync(kvp.Value);
                 results.Add(new FileWrittenSuccess($"{cleanFileName} был успешно записан."));
-                await asyncLogger.LogAsync($"{cleanFileName} был успешно записан.");
+                await asyncLogger.LogAsync($"[green]{cleanFileName} был успешно записан.[/]");
             }
             catch (Exception ex)
             {
-                results.Add(new FileWrittenFailure($"Ошибка записи в файл: {ex.Message}"));
-                await asyncLogger.LogAsync($"Ошибка записи в файл: {ex.Message}");
+                results.Add(new FileWrittenFailure($"Ошибка записи в файл: {ex.Message}."));
+                await asyncLogger.LogAsync($"[red]Ошибка записи в файл: {ex.Message}.[/]");
             }
         }
         return results;

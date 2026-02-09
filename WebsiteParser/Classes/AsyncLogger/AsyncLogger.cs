@@ -1,5 +1,4 @@
 ﻿using Spectre.Console;
-using Spectre.Console.Rendering;
 using System.Threading.Channels;
 using WebsiteParser.Constants;
 
@@ -15,8 +14,8 @@ internal class AsyncLoggerClass
     {
         _channel = Channel.CreateBounded<string>(75);
 
-        DirectoryPaths.CreateDirectoryIfNotExist(DirectoryPaths.SAVE_RESULT_FOLDER_PATH);
-        _logsFilePath = Path.Combine(Path.GetFullPath(DirectoryPaths.SAVE_RESULT_FOLDER_PATH), "logs.txt");
+        DirectoryPaths.CreateDirectoryIfNotExist(DirectoryPaths.LOGS_APP_FOLDER_PATH);
+        _logsFilePath = Path.Combine(Path.GetFullPath(DirectoryPaths.LOGS_APP_FOLDER_PATH), FileNames.MAIN_LOG_FILE_NAME);
         
         _workerTask = Task.Run(() => ProcessLogsAsync(_cts.Token));
     }
@@ -33,13 +32,16 @@ internal class AsyncLoggerClass
             await foreach (var message in _channel.Reader.ReadAllAsync(token))
             {
 
-                AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {Markup.Escape(message)}"));
-                await File.AppendAllTextAsync(_logsFilePath, message + Environment.NewLine);
+                AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {(message)}"));
+                var plainText = message.RemoveMarkup();
+                await File.AppendAllTextAsync(_logsFilePath, plainText + Environment.NewLine);
             }
         }
         catch(OperationCanceledException)
         {
-            AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {Markup.Escape("[[Logger Thread]]: Завершение работы...")}"));
+            AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: [springgreen3]Все логи были сохраненны в папку " +
+                $" {DirectoryPaths.LOGS_APP_FOLDER_PATH} в файл {FileNames.MAIN_LOG_FILE_NAME}.[/]"));
+            AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {Markup.Escape($"Завершение работы...")}"));
         }
     }
 

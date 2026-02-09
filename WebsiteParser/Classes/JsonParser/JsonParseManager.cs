@@ -18,21 +18,21 @@ internal class JsonParseManager<TConfig>(
             if (parsedJson is null)
             {
                 // LOGGIN logic
-                await asyncLogger.LogAsync($"Файл {filePath} пуст или не найден.");
+                await asyncLogger.LogAsync($"[red]Файл {filePath} пуст или не найден.[/]");
                 // LOGGIN logic
                 return new JsonParseError<TConfig>($"Файл {filePath} пуст или не найден.");
             }
             // LOGGIN logic
-            await asyncLogger.LogAsync($"Данные были успешно парсированы");
+            await asyncLogger.LogAsync($"[green]Данные были успешно парсированы.[/]");
             // LOGGIN logic
-            return new JsonParseSuccess<TConfig>(parsedJson, "Данные были успешно парсированы");
+            return new JsonParseSuccess<TConfig>(parsedJson, "Данные были успешно парсированы.");
         }
         catch (Exception ex)
         {
             // LOGGIN logic
-            await asyncLogger.LogAsync($"Провал парсинга: {ex.Message}");
+            await asyncLogger.LogAsync($"[red]Провал парсинга: {ex.Message}.[/]");
             // LOGGIN logic
-            return new JsonParseError<TConfig>($"Провал парсинга: {ex.Message}");
+            return new JsonParseError<TConfig>($"Провал парсинга: {ex.Message}.");
         }
     }
 }

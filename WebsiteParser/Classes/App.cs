@@ -14,7 +14,7 @@ internal class App(
     {
         CancellationTokenSource cts = new CancellationTokenSource();
 
-        IWebParserManagerResult webParserManagerResult = await webParserManager.ParseWebsites(FilePaths.WEBSITES_PATHS, DirectoryPaths.SAVE_RESULT_FOLDER_PATH, cts.Token);
+        IWebParserManagerResult webParserManagerResult = await webParserManager.ParseWebsites(FileAndDirectoriesPathsAndNames.WEBSITES_PATHS, DirectoryPaths.SAVE_RESULT_FOLDER_PATH, cts.Token);
         await asyncLogger.LogAsync(webParserManagerResult.Message);
         await asyncLogger.StopAsync();
     }

@@ -23,9 +23,9 @@ internal class WebParserClass(
             catch (HttpRequestException ex)
             {
                 // LOGGIN logic
-                await asyncLogger.LogAsync($"HTTP Error: {ex.Message}");
+                await asyncLogger.LogAsync($"[red]HTTP Error: {ex.Message}.[/]");
                 // LOGGIN logic
-                return new WebsiteParseError($"HTTP Error: {ex.Message}", ex.Message);
+                return new WebsiteParseError($"HTTP Error: {ex.Message}.", ex.Message);
             }
             catch when (i < maxRetries)
             {
@@ -34,16 +34,16 @@ internal class WebParserClass(
             catch (Exception ex) 
             {
                 // LOGGIN logic
-                await asyncLogger.LogAsync($"ERROR: {ex.Message}");
+                await asyncLogger.LogAsync($"[red]ERROR: {ex.Message}.[/]");
                 // LOGGIN logic
-                return new WebsiteParseError($"ERROR: {ex.Message}", $"ERROR: {ex.Message}");
+                return new WebsiteParseError($"ERROR: {ex.Message}.", $"ERROR: {ex.Message}.");
             }
         }
 
         // LOGGIN logic
-        await asyncLogger.LogAsync("Failed after retries");
+        await asyncLogger.LogAsync("[red]Failed after retries.[/]");
         // LOGGIN logic
-        return new WebsiteParseError("Unknown", "Failed after retries");
+        return new WebsiteParseError("Unknown", "Failed after retries.");
     }
 
     public async Task<IDictionary<string, IWebsiteParseResult>> FetchMultipleDataAsync(IEnumerable<string> urls, CancellationToken token)

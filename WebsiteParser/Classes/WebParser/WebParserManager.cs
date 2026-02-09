@@ -3,6 +3,7 @@ using WebsiteParser.Interfaces;
 using WebsiteParser.Records;
 using WebsiteParser.Enums;
 using WebsiteParser.Classes.AsyncLogger;
+using WebsiteParser.Classes.NetworkHelper;
 
 namespace WebsiteParser.Classes.WebParser;
 
@@ -23,10 +24,10 @@ internal class WebParserManager(
             // LOGGIN logic
             string message = fileGettingResult switch
             {
-                JsonFileGettingError e => $"{e.FilePath}: {e.Message}",
-                JsonFileGettingWarning w => $"{w.FilePath}: {w.Message}",
-                JsonFileGettingSuccess s => $"Успех: {s.Message}",
-                _ => "Неизвестный статус"
+                JsonFileGettingSuccess s => $"[green]Успех: {s.Message}[/]",
+                JsonFileGettingError e => $"[red]{e.FilePath}: {e.Message}[/]",
+                JsonFileGettingWarning w => $"[orange1]{w.FilePath}: {w.Message}[/]",
+                _ => "[grey]Неизвестный статус[/]"
             };
             await asyncLogger.LogAsync(message);
             // LOGGIN logic
@@ -43,11 +44,17 @@ internal class WebParserManager(
 
     public async Task<IWebParserManagerResult> ParseWebsites(string jsonFileWithPaths, string directoryPathToSaveHTML, CancellationToken token)
     {
+        if (!await NetworkHelperClass.HasConnection())
+        {
+            await asyncLogger.LogAsync("[red]Ошибка: Интернет-соединение отсутствует. Проверьте кабель или Wi-Fi.[/]");
+            return new WebParserManagerFailure("Ошибка: Интернет-соединение отсутствует. Проверьте кабель или Wi-Fi.");
+        }
+
         IDictionary<string, IWebsiteParseResult>? parsedSites = await this.GetWebsitesHTMLAsync(jsonFileWithPaths, directoryPathToSaveHTML, token);
         if (parsedSites is null)
         {
             // LOGGIN logic
-            await asyncLogger.LogAsync($"Файл с путями сайтов не был найден.");
+            await asyncLogger.LogAsync($"[red]Файл с путями сайтов не был найден.[/]");
             // LOGGIN logic
             return new WebParserManagerFailure($"Файл с путями сайтов не был найден.");
         }
@@ -57,8 +64,8 @@ internal class WebParserManager(
             filesToHTML.Add(key, value.Data);
         List<IFileWrittenResult> fileWrittenResults = await fileManagerClass.WriteMultipleFilesAsync(filesToHTML, directoryPathToSaveHTML, FileExtentions.HTML);
         // LOGGIN logic
-        await asyncLogger.LogAsync($"Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.");
+        await asyncLogger.LogAsync($"[green]Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.[/]");
         // LOGGIN logic   
-        return new WebParserManagerSuccess($"Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.");
+        return new WebParserManagerSuccess($"[springgreen3]Все сайты из файла {jsonFileWithPaths} были пропарсированны и положены в директорию {directoryPathToSaveHTML}.[/]");
     }
 }

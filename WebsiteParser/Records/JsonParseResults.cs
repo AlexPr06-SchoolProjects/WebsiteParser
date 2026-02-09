@@ -1,6 +1,4 @@
-﻿using WebsiteParser.Interfaces;
-
-namespace WebsiteParser.Records;
+﻿namespace WebsiteParser.Records;
 
 internal abstract record JsonParseResult<T>(string Message);
 

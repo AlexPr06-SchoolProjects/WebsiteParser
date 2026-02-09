@@ -13,6 +13,8 @@ HostApplicationBuilder builder = new HostApplicationBuilder(args);
 
 builder.Services.AddSingleton<App>();
 
+
+#region Adding_Builder_Services
 // ------------------------ Other Services --------------------------------------
 
 builder.Services.AddSingleton<FileManagerClass>();
@@ -37,11 +39,16 @@ builder.Services.AddSingleton<AsyncLoggerClass>();
 
 bool useHttpLogging = AnsiConsole.Confirm("Желаете использовать логирование, предоставленное встроенным логгером от IHttpClientFactory?");
 if (!useHttpLogging)
+{
     builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
+    builder.Logging.AddFilter("Microsoft.Extensions.Http", LogLevel.Error);
+}
 
 // ----------------------- OTPIONAL ------------------------------------
 
-// ------------------------ Other Services --------------------------------------
+// --------------------------------------------------------------------------------
+#endregion
+
 
 using IHost host  = builder.Build();
 
