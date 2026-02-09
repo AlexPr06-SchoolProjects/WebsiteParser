@@ -24,7 +24,6 @@ internal class FileManagerClass(
             return new JsonFileGettingError(fullFilePath, $"ERROR: Директории не существует");
         }
 
-
         JsonParseResult<Config> jsonResult = await jsonParseManager.JsonParseResultAsync(fullFilePath);
 
         string summary = jsonResult switch

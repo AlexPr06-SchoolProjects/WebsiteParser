@@ -1,4 +1,6 @@
-﻿using System.Threading.Channels;
+﻿using Spectre.Console;
+using Spectre.Console.Rendering;
+using System.Threading.Channels;
 using WebsiteParser.Constants;
 
 namespace WebsiteParser.Classes.AsyncLogger;
@@ -30,13 +32,14 @@ internal class AsyncLoggerClass
         {
             await foreach (var message in _channel.Reader.ReadAllAsync(token))
             {
-                Console.WriteLine($"[Logger Thread]: {message}");
+
+                AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {Markup.Escape(message)}"));
                 await File.AppendAllTextAsync(_logsFilePath, message + Environment.NewLine);
             }
         }
         catch(OperationCanceledException)
         {
-            Console.WriteLine("[Logger Thread]: Завершение работы...");
+            AnsiConsole.Write(CreateLogPanel($"[blue][[Logger Thread]][/]: {Markup.Escape("[[Logger Thread]]: Завершение работы...")}"));
         }
     }
 
@@ -45,6 +48,17 @@ internal class AsyncLoggerClass
         _channel.Writer.Complete();
         _cts.Cancel();              
         await _workerTask;      
+    }
+
+    private Panel CreateLogPanel(string message)
+    {
+        var panel = new Panel(message)
+        {
+            Header = new PanelHeader("Log Entry"),
+            Border = BoxBorder.Rounded,
+            BorderStyle = new Style(Color.DarkGoldenrod)
+        };
+        return panel;
     }
 }
 
